@@ -70,7 +70,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_library(mcl SHARED src/fp.cpp)
+add_library(mcl src/fp.cpp)
 add_library(mcl::mcl ALIAS mcl)
 target_compile_definitions(mcl PUBLIC MCL_NO_AUTOLINK MCLBN_NO_AUTOLINK)
 target_include_directories(mcl PUBLIC
@@ -103,11 +103,11 @@ endif()
 
 if(MSVC)
 	if(MCL_MSVC_RUNTIME_DLL)
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} /MD /Oy /Ox /EHsc /GS- /Zi /DNDEBUG")
-		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} /MDd")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} /MD /Oy /Ox /EHsc /GS- /Zi /DNDEBUG /FS")
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} /MDd /FS")
 	else()
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} /MT /Oy /Ox /EHsc /GS- /Zi /DNDEBUG")
-		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} /MTd")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} /MT /Oy /Ox /EHsc /GS- /Zi /DNDEBUG /FS")
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} /MTd /FS")
 	endif()
 
 	target_compile_definitions(mcl PUBLIC NOMINMAX)
@@ -239,11 +239,7 @@ endif()
 
 # mclbnXXX
 foreach(bit IN ITEMS 256 384 384_256)
-	if (MCL_STATIC_LIB)
-		add_library(mclbn${bit} STATIC src/bn_c${bit}.cpp)
-	else()
-		add_library(mclbn${bit} SHARED src/bn_c${bit}.cpp)
-	endif()
+	add_library(mclbn${bit} src/bn_c${bit}.cpp)
 	add_library(mcl::mclbn${bit} ALIAS mclbn${bit})
 	set_target_properties(mclbn${bit} PROPERTIES
 		CXX_STANDARD 11
